@@ -32,13 +32,33 @@ def test_logout_available_for_anonymous(client, logout_url):
 @pytest.mark.parametrize(
     'client, url, expected_status',
     (
-        (lazy_fixture('author_client'), lazy_fixture('edit_url'), HTTPStatus.OK),
-        (lazy_fixture('reader_client'), lazy_fixture('edit_url'), HTTPStatus.NOT_FOUND),
-        (lazy_fixture('author_client'), lazy_fixture('delete_url'), HTTPStatus.OK),
-        (lazy_fixture('reader_client'), lazy_fixture('delete_url'), HTTPStatus.NOT_FOUND),
+        (
+            lazy_fixture('author_client'),
+            lazy_fixture('edit_url'),
+            HTTPStatus.OK,
+        ),
+        (
+            lazy_fixture('reader_client'),
+            lazy_fixture('edit_url'),
+            HTTPStatus.NOT_FOUND,
+        ),
+        (
+            lazy_fixture('author_client'),
+            lazy_fixture('delete_url'),
+            HTTPStatus.OK,
+        ),
+        (
+            lazy_fixture('reader_client'),
+            lazy_fixture('delete_url'),
+            HTTPStatus.NOT_FOUND,
+        ),
     ),
 )
-def test_availability_for_comment_edit_and_delete(client, url, expected_status):
+def test_availability_for_comment_edit_and_delete(
+    client,
+    url,
+    expected_status,
+):
     """Проверяет доступ к страницам редактирования и удаления комментария."""
     response = client.get(url)
 

@@ -82,8 +82,10 @@ def test_user_cant_edit_comment_of_another_user(
     edit_url,
     form_data,
 ):
-    """Проверяет, что другой пользователь не может редактировать чужой комментарий."""
-    new_comment_data = {'text': 'Обновленный комментарий'}
+    """Проверяет запрет на редактирование чужого комментария."""
+    new_comment_data = {
+        'text': 'Обновленный комментарий',
+    }
     expected_text = comment.text
     expected_news = comment.news
     expected_author = comment.author
@@ -106,7 +108,7 @@ def test_author_can_delete_comment(author_client, delete_url, comments_url):
 
 
 def test_user_cant_delete_comment_of_another_user(reader_client, delete_url):
-    """Проверяет, что другой пользователь не может удалить чужой комментарий."""
+    """Проверяет запрет на удаление чужого комментария."""
     response = reader_client.delete(delete_url)
 
     assert response.status_code == HTTPStatus.NOT_FOUND

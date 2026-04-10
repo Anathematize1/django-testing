@@ -24,6 +24,12 @@ class TestLogic(TestCase):
             author=cls.author,
         )
 
+        cls.form_data = {
+            'title': 'new_note',
+            'text': 'new_text',
+            'slug': 'new-slug',
+        }
+
         cls.login_url = reverse('users:login')
         cls.add_url = reverse('notes:add')
         cls.edit_url = reverse('notes:edit', args=(cls.note.slug,))

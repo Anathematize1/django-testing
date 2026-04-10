@@ -102,7 +102,7 @@ def comments(news_item, author):
 
 @pytest.fixture
 def form_data():
-    return {'text': 'Текст комментария'}
+    return {'text': 'Новый текст комментария'}
 
 
 @pytest.fixture
@@ -110,8 +110,13 @@ def comment(news_item, author):
     return Comment.objects.create(
         news=news_item,
         author=author,
-        text='Текст комментария',
+        text='Исходный текст комментария',
     )
+
+
+@pytest.fixture
+def detail_redirect_url(login_url, detail_url):
+    return f'{login_url}?next={detail_url}'
 
 
 @pytest.fixture

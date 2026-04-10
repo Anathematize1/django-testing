@@ -37,73 +37,69 @@ class TestRoutes(TestCase):
         cls.edit_url = reverse('notes:edit', args=(cls.note.slug,))
         cls.delete_url = reverse('notes:delete', args=(cls.note.slug,))
 
-        cls.public_urls = (
-            cls.home_url,
-            cls.login_url,
-            cls.signup_url,
-        )
-        cls.auth_urls = (
-            cls.list_url,
-            cls.success_url,
-            cls.add_url,
-        )
-        cls.note_urls = (
-            cls.detail_url,
-            cls.edit_url,
-            cls.delete_url,
-        )
-
-    @classmethod
-    def get_author_client(cls):
-        client = Client()
-        client.force_login(cls.author)
-        return client
-
-    @classmethod
-    def get_other_client(cls):
-        client = Client()
-        client.force_login(cls.other)
-        return client
+    def setUp(self):
+        self.author_client = Client()
+        self.author_client.force_login(self.author)
+        self.other_client = Client()
+        self.other_client.force_login(self.other)
 
     def test_public_pages_available_for_anonymous(self):
-        for url in self.public_urls:
+        """Проверяет доступность публичных страниц"""
+        """для анонимного пользователя."""
+        urls = (
+            self.home_url,
+            self.login_url,
+            self.signup_url,
+        )
+        for url in urls:
             with self.subTest(url=url):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_logout_available_for_all(self):
-        clients = (
-            self.client,
-            self.get_author_client(),
-            self.get_other_client(),
-        )
-        for client in clients:
-            with self.subTest(client=client):
-                response = client.post(self.logout_url)
-                self.assertEqual(response.status_code, HTTPStatus.OK)
+    def test_logout_available_for_anonymous(self):
+        """Проверяет доступность страницы выхода для всех пользователей."""
+        response = self.client.post(self.logout_url)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_auth_user_pages_available(self):
-        author_client = self.get_author_client()
-        for url in self.auth_urls:
+        """Проверяет доступность служебных страниц для автора."""
+        urls = (
+            self.list_url,
+            self.success_url,
+            self.add_url,
+        )
+        for url in urls:
             with self.subTest(url=url):
-                response = author_client.get(url)
+                response = self.author_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_note_pages_available_only_for_author(self):
-        author_client = self.get_author_client()
-        for url in self.note_urls:
-            with self.subTest(url=url):
-                response = author_client.get(url)
-                self.assertEqual(response.status_code, HTTPStatus.OK)
-
-        other_client = self.get_other_client()
-        for url in self.note_urls:
-            with self.subTest(url=url):
-                response = other_client.get(url)
-                self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        """Проверяет доступ к страницам заметки только для автора."""
+        urls = (
+            self.detail_url,
+            self.edit_url,
+            self.delete_url,
+        )
+        clients_statuses = (
+            (self.author_client, HTTPStatus.OK),
+            (self.other_client, HTTPStatus.NOT_FOUND),
+        )
+        for client, status in clients_statuses:
+            for url in urls:
+                with self.subTest(client=client, url=url, status=status):
+                    response = client.get(url)
+                    self.assertEqual(response.status_code, status)
 
     def test_anonymous_redirect_to_login(self):
-        urls = self.auth_urls + self.note_urls
+        """Проверяет редирект анонимного пользователя на страницу входа."""
+        urls = (
+            self.list_url,
+            self.success_url,
+            self.add_url,
+            self.detail_url,
+            self.edit_url,
+            self.delete_url,
+        )
         for url in urls:
             with self.subTest(url=url):
                 response = self.client.get(url)

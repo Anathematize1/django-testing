@@ -38,7 +38,7 @@
 - Python  
 - Django  
 - pytest  
-- Django Test Client  
+- unittest 
 
 
 ## ⚙️ Запуск тестов:
